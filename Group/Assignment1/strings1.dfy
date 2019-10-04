@@ -9,7 +9,11 @@ method isPrefix(pre: string, str: string) returns (res: bool){
   }
   
   var i: nat := 0;
-  while(i < |pre|){
+  var n:= |pre|;
+  while(i < n)
+    decreases n - i
+    invariant 0 <= i <= n
+  {
     if(pre[i] != str[i]){
       return false;
     }
@@ -23,11 +27,20 @@ method isSubstring(sub: string, str: string) returns (res: bool){
   if(|sub| == 0){
     return true;
   }
+
+  if(|str| < |sub|){
+    return false;
+  }
  
   var i: nat := 0;
   var substr: string;
   var isPref : bool;
-  while (i < |str| - |sub|){
+  var len: int := |str| - |sub|;
+
+  while (i < len)
+    decreases len - i
+    invariant 0 <= i <= len
+  {
     substr := str[i..];
     isPref := isPrefix(sub, substr);
     if(isPref){
@@ -48,7 +61,10 @@ method haveCommonKSubstring(k: nat, str1: string, str2:string) returns (res: boo
   }
   
   var i: nat := 0;
-  while(i < |str1| - k){
+  while(i < |str1| - k)
+    decreases |str1| - k - i 
+    invariant 0 <= i <= |str1| - k
+  {
     var substr : string := str1[i..i+k-1];
     var isSubStr : bool := isSubstring(substr, str2);
     if(isSubStr){
@@ -71,7 +87,10 @@ method maxCommonSubstringLength(str1: string, str2: string) returns (len:nat){
   var k : nat := 0;
   var haveCommonSubstring : bool := true;
   
-  while(k < |short|){
+  while(k < |short|)
+    decreases |short| - k
+    invariant 0 <= k <= |short|
+  {
     haveCommonSubstring := haveCommonKSubstring(k, short, long);
     if(!haveCommonSubstring){
       break;
