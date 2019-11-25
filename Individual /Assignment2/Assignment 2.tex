@@ -1,0 +1,233 @@
+\documentclass[12pt]{article}
+\usepackage{amsfonts}
+\usepackage{fancyhdr}
+\usepackage{comment}
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.2cm, right=2.2cm]%
+{geometry}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{changepage}
+\usepackage{amssymb}
+\usepackage{graphicx,wrapfig,lipsum}%
+\usepackage{array}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{makecell}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{oz}
+
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+\graphicspath{ {./Images/} }
+
+\definecolor{lightgray}{RGB}{214, 219, 223}
+\definecolor{limegreen}{RGB}{11, 83, 69}
+\definecolor{blue}{RGB}{0, 70, 255}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{lightgray}, 
+    showstringspaces=false,  
+    belowcaptionskip=1\baselineskip,
+    basicstyle=\footnotesize\ttfamily,
+  	keywordstyle=\bfseries\color{green!40!black},
+  	commentstyle=\itshape\color{purple!40!black},
+  	identifierstyle=\color{blue},
+  	stringstyle=\color{orange},
+    breaklines=true
+    language=Matlab
+}
+\lstset{style=mystyle}
+\makeatletter
+\renewcommand{\maketitle}{\bgroup\setlength{\parindent}{0pt}
+\begin{flushleft}
+  \textbf{\@title}
+
+  \@author
+  \@date
+\end{flushleft}\egroup
+}
+\makeatother
+
+\begin{document}
+\title{CSU44004-Formal Verification Assignment 2 }
+\author{Leong Kai Ler \\ 15334636 \\   }
+\date{\today}
+\maketitle
+
+\section*{Question 1}
+\begin{enumerate}[label=\alph*)]
+\item $\forall x(0 \leq x < \abs{s} \implies \exists y \exists z(0 \leq y < z < \abs{s'} \land s[x] = s'[y] \land s[x] = s'[z] \land y \neq z))$ \\
+\item $\forall w(0 \leq w < \abs{s} \implies !(\exists x \exists y \exists z(0 \leq x < y < z < \abs{s'} \land s[w] = s'[x] \land s[w] = s'[y] \land s[w] = s'[z] \land x \neq y \land y \neq z \land x \neq z)))$ \\
+\item $\forall x(0 \leq x < \abs{s} \implies \exists y \exists z(0 \leq y < z < \abs{s'} \land s[x] = s'[y] \land s[x] = s'[z] \land y \neq z \land \forall w(0 \leq w < \abs{s'} \land y \neq w \land z \neq w \implies s[x] \neq s'[w])))$ \\
+\item let a be the integer. \\
+$\forall x(\neg \exists y(0 \leq y < \abs{s} \land s[y]=x) \implies \neg \exists z(0 \leq z < \abs{s'} \land s'[z]=x))$
+\end{enumerate}
+\newpage
+\section*{Question 2} 
+\subsection*{Solution 2(a)}
+$0 \leq lo < \abs{s} \land \forall x (0 \leq x < \abs{s} \implies s[lo] \geq s[x])$
+
+\subsection*{Solution 2(b)}
+Show $\vdash_{par} \limg 0 < \abs{s} \rimg$ findMax $\limg $T$ \rimg$. \\ \\
+Invariant = T \\
+Variant = hi - lo \\ \\
+$\limg 0 < \abs{s} \rimg$ 	\\
+$\limg T \land 0 < \abs{s} \rimg$ \textit{\textbf{imp}} \\ 					
+\textbf{lo := 0};  \\
+$\limg T \land lo < \abs{s} \rimg$	\textit{\textbf{asg}}\\
+$\limg T \land lo \leq \abs{s} - 1 \rimg$	\textit{\textbf{imp}}\\
+\textbf{hi := $\abs{s}$ - 1 ;} \\
+$\limg T \land hi < \abs{s} \rimg$	\textit{\textbf{asg}}\\
+$\limg T \land hi - lo \geq 0 \rimg$ \textit{\textbf{imp}}\\
+\textbf{while ( lo $<$ hi ) $\{$} \\
+\hspace*{10mm}$\limg T \land 0 \leq hi - lo = E_o \land lo < hi \rimg$ \textit{\textbf{while}}\\
+\hspace*{10mm}$\limg 0 < hi - lo = E_o \rimg$ \textit{\textbf{imp}}\\
+\hspace*{10mm}\textbf{if $(s[lo] \leq s[hi])$ then $\{$} \\
+\hspace*{20mm}$\limg 0 < hi - lo = E_o \land s[lo] \leq s[hi] \rimg$ \textit{\textbf{if-statement}}\\
+\hspace*{20mm}$\limg 0 \leq hi - (lo + 1) < E_o \rimg$ \textit{\textbf{imp}}\\
+\hspace*{20mm}\textbf{lo := lo + 1;} \\
+\hspace*{20mm}$\limg 0 \leq hi - lo < E_o \rimg$ \textit{\textbf{asg}}\\
+\hspace*{10mm}\textbf{$\}$} \\
+\hspace*{10mm}\textbf{else $\{$} \\
+\hspace*{20mm}$\limg 0 < hi - lo = E_o \land \neg(s[lo] \leq s[hi]) \rimg$ \textit{\textbf{if-statement}}\\
+\hspace*{20mm}$\limg 0 \leq (hi - 1) - lo < E_o \rimg$ \textit{\textbf{imp}}\\
+\hspace*{20mm}\textbf{hi := hi - 1 ;} \\
+\hspace*{20mm}$\limg 0 \leq hi - lo < E_o \rimg$ \textit{\textbf{asg}}\\
+\hspace*{10mm}\textbf{$\}$} \\
+\hspace*{10mm}$\limg 0 \leq hi - lo < E_o \rimg$ \textit{\textbf{if-statement}}\\
+\hspace*{10mm}$\limg T \land 0 \leq hi - lo < E_o \rimg$ \textit{\textbf{imp}}\\
+\textbf{$\}$} \\
+$\limg T \land \neg (lo < hi)\rimg$ \textit{\textbf{while}}\\ 
+$\limg T \rimg$
+\newpage
+\subsection*{Solution 2(c)}
+Show $\vdash_{par} \limg 0 < \abs{s} \rimg$ findMax $\limg $ isMax(s, lo)$\rimg$. \\ \\
+Invariant = $isMax(s[..lo+1]+s[hi..],lo) \lor isMax(s[..lo+1]+s[hi..],lo+1) $\\
+Variant = hi - lo \\ \\
+$\limg 0 < \abs{s} \rimg$ \\
+$\limg 0 < \abs{s} \land (isMax(s[..0+1]+s[\abs{s}-1..], 0) \lor isMax(s[..0+1]+s[\abs{s}-1..], \abs{s} - 1))\rimg$ \textit{\textbf{imp}}\\				
+\textbf{lo := 0};  \\
+$\limg lo < \abs{s} \land (isMax(s[..lo+1]+s[\abs{s}-1..], lo) \lor isMax(s[..lo+1]+s[\abs{s}-1..], \abs{s} - 1))\rimg$ \textit{\textbf{asg}}\\
+\textbf{hi := $\abs{s}$ - 1 ;} \\
+$\limg lo \leq hi < \abs{s} \land (isMax(s[..lo+1]+s[hi..], lo) \lor isMax(s[..lo+1]+s[hi..], lo+1))\rimg$	\textit{\textbf{asg}}\\
+\textbf{while ( lo $<$ hi ) $\{$} \\
+\hspace*{10mm}$\limg lo \leq hi \land (isMax(s[..lo+1]+s[hi..], lo) \lor isMax(s[..lo+1]+s[hi..], lo+1))\rimg$	\textit{\textbf{while}}\\
+\hspace*{10mm}$\limg (isMax(s[..lo+1]+s[hi..], lo) \lor isMax(s[..lo+1]+s[hi..], lo+1))\rimg$	\textit{\textbf{imp}}\\
+\hspace*{10mm}\textbf{if $(s[lo] \leq s[hi])$ then $\{$} \\
+\hspace*{20mm}$\limg (isMax(s[..lo+1]+s[hi..], lo) \lor isMax(s[..lo+1]+s[hi..], lo+1)) \land s[lo] \leq s[hi]\rimg$	\\ \hspace*{20mm}\textit{\textbf{if-statement}}\\
+\hspace*{20mm}$\limg isMax(s[..lo+1]+s[hi..], lo+1) \rimg$ \textit{\textbf{imp}}\\
+\hspace*{20mm}\textbf{lo := lo + 1;} \\
+\hspace*{20mm}$\limg isMax(s[..lo]+s[hi..], lo) \rimg$ \textit{\textbf{asg}}\\
+\hspace*{10mm}\textbf{$\}$} \\
+\hspace*{10mm}\textbf{else $\{$} \\
+\hspace*{20mm}$\limg (isMax(s[..lo+1]+s[hi..], lo) \lor isMax(s[..lo+1]+s[hi], lo+1)) \land \neg(s[lo] \leq s[hi])\rimg$	\\ \hspace*{20mm}\textit{\textbf{if-statement}}\\
+\hspace*{20mm}$\limg isMax(s[..lo+1]+s[hi..], lo) \rimg$ \textit{\textbf{imp}}\\
+\hspace*{20mm}\textbf{hi := hi - 1 ;} \\
+\hspace*{20mm}$\limg isMax(s[..lo+1]+s[hi+1..], lo) \rimg$ \textit{\textbf{asg}}\\
+\hspace*{10mm}\textbf{$\}$} \\
+\hspace*{10mm}$isMax(s[..lo]+s[hi..], lo) \lor isMax(s[..lo+1]+s[hi+1..], lo)$ \textit{\textbf{if-statement}}\\
+\hspace*{10mm}$lo \leq hi \land isMax(s[..lo]+s[hi..], lo) \lor isMax(s[..lo+1]+s[hi+1..], lo)$ \textit{\textbf{imp}}\\
+\textbf{$\}$} \\
+$\limg$ $(isMax(s[..lo]+s[hi..], lo) \lor isMax(s[..lo+1]+s[hi+1..], lo))\land \neg(lo < hi) \rimg$ \textit{\textbf{while}}\\
+$\limg$ $(isMax(s[..lo]+s[hi..], lo) \lor isMax(s[..lo+1]+s[hi+1..], lo))\land lo = hi \rimg$ \textit{\textbf{imp}}\\
+$\limg$ $isMax(s[..lo]+s[lo..], lo) \rimg$ \textit{\textbf{imp}}\\
+$\limg$ $isMax(s, lo)$ $\rimg$
+\newpage
+\section*{Question 3}
+\subsection*{Solution 3(a)}
+$\forall x (0 \leq x < \frac{\abs{s}}{2} \implies s[x]=s[\abs{s}-x-1])$
+
+\subsection*{Solution 3(b)}
+Show $\vdash_{tot} \limg 0 \leq \abs{s} \rimg$ checkPalindrome $\limg T \rimg$. \\ \\
+Invariant = T \\
+Variant = j - i \\ \\
+$\limg 0 \leq \abs{s} \rimg$ \\
+$\limg T \land 0 \leq \abs{s} \rimg$ \textit{\textbf{imp}}\\
+\textbf{res := 1;} \\
+\textbf{var i := 0;} \\
+$\limg T \land i \leq \abs{s} \rimg$ \textit{\textbf{asg}}\\
+$\limg T \land i - 1 \leq \abs{s} - 1 \rimg$ \textit{\textbf{imp}}\\
+\textbf{var j := $\abs{s}$ - 1;} \\
+$\limg T \land -1 \leq j \rimg$ \textit{\textbf{asg}} \\
+$\limg T \land i-1 \leq j \rimg$ \textit{\textbf{imp}} \\
+$\limg T \land -1 \leq j-i \rimg$ \textit{\textbf{imp}} \\
+$\limg T \land j - i + 1 \geq 0 \rimg$ \textit{\textbf{imp}}\\
+\textbf{while ( i $<$ j $\&$ res = 1)} \\
+\textbf{$\{$} \\
+\hspace*{10mm}$\limg T \land i < j  \land res = 1 \land 0 \leq j - i + 1 = E_o \rimg$ \textit{\textbf{while}}\\
+\hspace*{10mm}$\limg T \land j - i > 0 \land res = 1 \land 0 \leq j - i + 1 = E_o \rimg$ \textit{\textbf{imp}}\\
+\hspace*{10mm}$\limg T \land res = 1 \land 0 < j - i < E_o \rimg$ \textit{\textbf{imp}}\\
+\hspace*{10mm}\textbf{if ( s[i] != s[j] )} \\
+\hspace*{10mm}\textbf{$\{$} \\
+\hspace*{20mm}$\limg i < j  \land res = 1 \land 0 \leq j - i + 1 = E_o \land s[i] != s[j] \rimg$ \textit{\textbf{if-statement}}\\
+\hspace*{20mm}\textbf{res := 0} \\
+\hspace*{20mm}$\limg 0 \leq j - i + 1 < E_o \rimg$ \textit{\textbf{imp}}\\
+\hspace*{10mm}\textbf{$\}$} \\
+\hspace*{10mm}\textbf{else} \\
+\hspace*{10mm}\textbf{$\{$} \\
+\hspace*{20mm}$\limg i < j  \land res = 1 \land 0 \leq j - i + 1 = E_o \land \neg(s[i] != s[j]) \rimg$ \textit{\textbf{if-statement}}\\
+\hspace*{20mm}\textbf{skip} \\
+\hspace*{20mm}$\limg 0 \leq j - i + 1 < E_o \rimg$ \textit{\textbf{imp}}\\
+\hspace*{10mm}\textbf{$\}$} \\
+\hspace*{10mm}$\limg T \land 0 \leq (j-1) - (i+1) + 1 < E_o \rimg$ \textit{\textbf{imp}}\\
+\hspace*{10mm}\textbf{i := i + 1;} \\
+\hspace*{10mm}$\limg T \land 0 \leq (j-1) - i + 1 < E_o \rimg$ \textit{\textbf{asg}}\\
+\hspace*{10mm}\textbf{j := j - 1;} \\
+\hspace*{10mm}$\limg T \land 0 \leq j - i + 1 < E_o \rimg$ \textit{\textbf{asg}}\\
+\textbf{$\}$} \\
+$\limg T \land (j <= i || res = 0) \rimg$ \textit{\textbf{while}}\\
+$\limg T \rimg$
+\newpage
+\subsection*{Solution 3(c)}
+Show $\vdash_{par} \limg 0 \leq \abs{s} \rimg$ checkPalindrome $\limg (res==1)\iff$ isPal(s)$\rimg$. \\ \\
+Invariant = $res = 1 \iff isPal(s[..i]+s[j+1..]$ \\
+Variant = j - i + 1 \\ \\
+Let \\
+$I_2 = 0 \leq i < j + 1 \leq \abs{s}$ \\ \\
+$\limg 0 \leq \abs{s} \rimg$ \\
+$\limg I_2 \land 1 = 1 \implies isPal(s[..0]+s[0-1+1..]) \land isPal(s[..0]+s[0-1+1..]) \implies 1 = 1\rimg$ \textit{\textbf{imp}}\\
+\textbf{res := 1;} \\
+\textbf{var i := 0;} \\
+\textbf{var j := $\abs{s}$ - 1;} \\
+$\limg I_2 \land res = 1 \implies isPal(s[..0]+s[0-1+1..]) \land isPal(s[..0]+s[0-1+1..]) \implies res = 1 \rimg$ \textit{\textbf{asg}}\\ 
+\textbf{while ( i $<$ j $\&$ res = 1)} \\
+\textbf{$\{$} \\
+\hspace*{10mm}$\limg I_2 \land$ res $== 1  \implies isPal(s[..i]+s[j+1..]) \land isPal(s[..i]+s[j+1..]) \implies $ res $==1 \rimg$ \textit{\textbf{while}}\\ 
+\hspace*{10mm}$\limg I_2= \land (s[i] != s[j] \implies (0 \neq 1 \land isPal(s[..i]+s[j+1..]))) \land \neg(s[i] != s[j] \implies (1 \neq 1 \land isPal(s[..i]+s[j+1..]))) \rimg$ \textit{\textbf{if-statement}}\\
+\hspace*{10mm}\textbf{if ( s[i] != s[j] )} \\
+\hspace*{10mm}\textbf{$\{$} \\
+\hspace*{20mm}$\limg 0 \neq 1 \land isPal(s[..i]+s[j+1..]) \rimg$\textit{\textbf{imp}}\\
+\hspace*{20mm}\textbf{res := 0} \\
+\hspace*{20mm}$\limg res==0 \land isPal(s[..i+1]+s[j..]) \rimg$\textit{\textbf{imp}}\\
+\hspace*{20mm}$\limg$ res $== 1  \implies isPal(s[..i+1]+s[j..]) \land isPal(s[..i+1]+s[j..]) \implies $ res $==1$\textit{\textbf{imp}}\\
+\hspace*{10mm}\textbf{$\}$} \\
+\hspace*{10mm}\textbf{$\}$} \\
+\hspace*{10mm}\textbf{else} \\
+\hspace*{10mm}\textbf{$\{$} \\
+\hspace*{20mm}$\limg 1==1 \land isPal(s[..i]+s[j+1..]) \rimg$\textit{\textbf{imp}}\\
+\hspace*{20mm}\textbf{skip} \\
+\hspace*{20mm}$\limg res==1 \land isPal(s[..i+1]+s[j..]) \rimg$\textit{\textbf{imp}}\\
+\hspace*{20mm}$\limg$ res $== 1  \implies isPal(s[..i+1]+s[j..]) \land isPal(s[..i+1]+s[j..]) \implies $ res $==1$\textit{\textbf{imp}}\\
+\hspace*{10mm}\textbf{$\}$} \\
+\hspace*{10mm}$\limg I_2 \land$ res $== 1  \implies isPal(s[..i+1]+s[j..]) \land isPal(s[..i+1]+s[j..]) \implies $ res $==1$\textit{\textbf{if-statement}}\\
+\hspace*{10mm}$\limg I_2 \land$ res $== 1  \implies isPal(s[..i+1]+s[j+1-1..]) \land isPal(s[..i+1]+s[j+1-1..]) \implies $ res $==1 \rimg$ \textit{\textbf{imp}}\\
+\hspace*{10mm}\textbf{i := i + 1;} \\
+\hspace*{10mm}$\limg I_2 \land$ res $== 1  \implies isPal(s[..i]+s[j+1-1..]) \land isPal(s[..i+1]+s[j+1-1..]) \implies $ res $==1 \rimg$ \textit{\textbf{asg}}\\
+\hspace*{10mm}\textbf{j := j - 1;} \\
+\hspace*{10mm}$\limg I_2 \land$ res $== 1  \implies isPal(s[..i]+s[j+1..]) \land isPal(s[..i]+s[j+1..]) \implies $ res $==1 \rimg$ \textit{\textbf{asg}}\\
+\textbf{$\}$} \\
+$\limg I_2 \land$ res $== 1  \implies isPal(s[..i]+s[j+1..]) \land isPal(s[..i]+s[j+1..]) \implies $ res $==1 \land \neg(i < j \land res = 1) \rimg$ \textbf{\textit{while}}\\ 
+$\limg I_2 \land$ res $== 1  \implies isPal(s[..i]+s[j+1..]) \land isPal(s[..i]+s[j+1..]) \implies $ res $==1 \land i = j \rimg$ \textbf{\textit{imp}}\\ 
+$\limg$ res $== 1  \implies isPal(s) \land isPal(s) \implies $ res $==1 \rimg$ \textbf{\textit{imp}}\\ 
+$\limg$ res $==1 \iff$ isPal(s) $\rimg$
+\newpage
+\section*{Question 4}
+\subsection*{Solution 4(a)}
+Show $\vdash_{tot} \limg 0 < \abs{s} \rimg$ findMax $\limg $ isMax(s, lo)$\rimg$. \\ 
+\lstinputlisting[language=C++]{./dafny/FindMax.dfy}
+\newpage
+\subsection*{Solution 4(b)}
+Show $\vdash_{par} \limg T \rimg$ checkPalindrome $\limg (res==1)\iff$ isPal(s)$\rimg$. \\ 
+\lstinputlisting[language=C++]{./dafny/CheckPalindrome.dfy}
+\end{document}

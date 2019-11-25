@@ -1,0 +1,125 @@
+\documentclass[12pt]{article}
+\usepackage{amsfonts}
+\usepackage{fancyhdr}
+\usepackage{comment}
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.2cm, right=2.2cm]%
+{geometry}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{changepage}
+\usepackage{amssymb}
+\usepackage{graphicx,wrapfig,lipsum}%
+\usepackage{array}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{makecell}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{oz}
+\usepackage{centernot}
+
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+\graphicspath{ {./Images/} }
+
+\definecolor{lightgray}{RGB}{214, 219, 223}
+\definecolor{limegreen}{RGB}{11, 83, 69}
+\definecolor{blue}{RGB}{0, 70, 255}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{lightgray}, 
+    showstringspaces=false,  
+    belowcaptionskip=1\baselineskip,
+    basicstyle=\footnotesize\ttfamily,
+  	keywordstyle=\bfseries\color{green!40!black},
+  	commentstyle=\itshape\color{purple!40!black},
+  	identifierstyle=\color{blue},
+  	stringstyle=\color{orange},
+    breaklines=true
+    language=Matlab
+}
+\lstset{style=mystyle}
+\makeatletter
+\renewcommand{\maketitle}{\bgroup\setlength{\parindent}{0pt}
+\begin{flushleft}
+  \textbf{\@title}
+
+  \@author
+  \@date
+\end{flushleft}\egroup
+}
+\makeatother
+
+\begin{document}
+\title{CSU44004-Formal Verification Assignment 2 }
+\author{Leong Kai Ler \\ 15334636 \\   }
+\date{\today}
+\maketitle
+
+\noindent $Found = 1 \implies \exists i (0 \leq i < \abs{s} \land n = s[i])$ \\
+$(\exists i (0 \leq i < \abs{s} \land n = s[i])) \implies Found = 1$ \\
+$\equiv$ \\
+$\forall i(0 \leq i < \abs{s} \land n = s[i] \implies Found = 1)$ \\ \\
+
+\noindent invariant := $\forall i(0 \leq i < ind \centernot\implies \neg(n=s[i]))$ \\ 
+\\ 
+$\limg T \rimg$ \\
+$\limg \neg Memb(s[..0], n) \rimg$ \\
+\textbf{ind} $:= 0;$ \\
+\textbf{found} $:= 0;$ \\
+$\limg I_2 \land I_3 \land \neg Memb(s[..ind], n) \rimg$ \\
+\textbf{while(ind}$< \abs{s} \&\&$ \textbf{found} $= 0)$\textbf{$\{$} \\
+\hspace*{10mm}$\limg I_2 \land I_3 \land \neg Memb(s[..ind], n) \land ind < \abs{s} \land found = 0\rimg$ \\
+\hspace*{10mm}$\limg I_2 \land I_3 \land (s[ind] = n \implies \neg Memb(s[..ind], n)) \land (\neg(s[ind] = n) \implies \neg Memb(s[..ind+1], n))\rimg$ \\
+\hspace*{10mm}\textbf{if(s[ind]} $=$ \textbf{n)$\{$} \\ 
+\hspace*{20mm}$\limg \neg Memb(s[..ind], n))\rimg$ \\
+\hspace*{20mm}\textbf{found = 1} \\ 
+\hspace*{20mm}$\limg \neg Memb(s[..ind], n))\rimg$ \\
+\hspace*{10mm}\textbf{$\}$} \\ 
+\hspace*{10mm}\textbf{else$\{$} \\
+\hspace*{20mm}$\limg \neg Memb(s[..ind+1], n))\rimg$ \\
+\hspace*{20mm}\textbf{ind = ind + 1} \\
+\hspace*{20mm}$\limg \neg Memb(s[..ind], n))\rimg$ \\
+\hspace*{10mm}\textbf{$\}$} \\ 
+\hspace*{10mm}$\limg (I_2 \land I_3) \land \neg Memb(s[..ind], n))\rimg$ \\
+\textbf{$\}$} \\ 
+$\limg I_2 \land I_3 \land \neg Memb(s[..ind], s) \land \neg(ind < \abs{s} \land found = 0)\rimg$ \\ 
+$\limg \neg(found=1) \implies \neg Memb(s,n) \rimg$ \\ \\
+
+\noindent Memb(s,n) = $\exists i(0 \leq i < \abs{s} \land s[i] = n)$ \\
+Prove: \\
+\begin{eqnarray*}
+found = 1 & \iff & \exists i(0 \leq i < \abs{s} \land s[i] = n) \\
+\equiv found = 1 & \iff & Memb(s,n) \\
+\equiv found = 1 & \implies & Memb(s,n) \\
+\equiv Memb(s,n) & \implies & found = 1 \\
+\equiv \neg (found = 1) & \implies & \neg (Memb(s,n)) \\
+\end{eqnarray*}
+s = 
+\begin{tabular}[5pt]{| c | c | c | c | c | c | c | c | c |}
+\hline
+& & & & & & & & \\
+\hline
+\end{tabular} \\
+Case where n is not in S[..ind] or S. \\
+\begin{eqnarray*}
+I_1 & = & \neg Memb(S[..ind],n) \\
+ 	& \equiv & \forall i (0 \leq i < ind \implies \neg(s[i] = n) \\
+ 	& \equiv & \forall i (\neg(0 \leq i < ind) \lor \neg(s[i] = n) \\
+ 	& \equiv & \forall i \neg(0 \leq i < ind \land (s[i] = n) \\
+ 	& \equiv & \neg \exists (0 \leq i < ind \land (s[i] = n) \\
+ 	& \equiv & \neg Memb(S[..ind],n) 
+\end{eqnarray*}
+\begin{eqnarray*}
+& & \neg Memb(s[..ind], n) \land \neg(ind < \abs{s} \land found = 0) \\
+& \implies & \neg Memb(s[..ind], n) \land (\neg(ind < \abs{s}) \lor \neg(found = 0)) \\
+& \implies & \neg (Memb(s[..ind], n) \land (\neg(ind < \abs{s})) \lor (\neg Memb(s[..ind], n) \land \neg(found = 0)) \\
+& \implies & \neg(found = 1) \implies \neg(Memb(s,n)
+\end{eqnarray*}
+Take $\neg$\textbf{found = 0)}:
+\begin{eqnarray*}
+I_2 & = & (found = 0) \lor (found = 1) \\
+I_3 & = & 0 \leq ind < \abs{s}
+\end{eqnarray*}
+Now, go back and put in the pre- and postconditions. 
+\end{document}
